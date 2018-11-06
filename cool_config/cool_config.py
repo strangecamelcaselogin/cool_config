@@ -7,7 +7,9 @@ Float = .0
 Dict = {}
 List = []
 
-__all__ = ['AbstractConfig', 'Section', 'String', 'Integer', 'Float', 'Dict', 'List']
+
+class ConfigException(Exception):
+    pass
 
 
 def object_attributes(class_: object) -> List:
@@ -18,42 +20,58 @@ def object_attributes(class_: object) -> List:
     :param class_: Класс, атрибуты которого мы хотим узнать
     :return: List
     """
-    attributes = inspect.getmembers(class_, lambda a: not (inspect.isroutine(a)))
-    return list(filter(lambda a: not (a[0].startswith('__') and a[0].endswith('__')), attributes))
+    def is_magic(name: str):
+        return name.startswith('__') and name.endswith('__')
+
+    attributes = inspect.getmembers(class_, lambda attr: not inspect.isroutine(attr))
+
+    return list(filter(lambda attr: not is_magic(attr[0]), attributes))
 
 
 def object_to_dict_string(obj: object) -> str:
-    """
-    :param obj: Объект
-    :return: str
-    """
     return '{' + ', '.join(["'{}': {}".format(key, str(value)) for key, value in object_attributes(obj)]) + '}'
 
 
-def parse_config(instance: object, class_: type, data: dict) -> object:
+def parse_config(model_instance: object, class_: type, data: dict, path: tuple=None) -> object:
     """
     Функция подставляет в инстанс класса модели значения взятые по путям модели из переданных данных.
 
-    :param instance: Инстанс класса модели, в который попадут данные
+    :param model_instance: Инстанс класса модели, в который попадут данные
     :param class_: Модель
     :param data: Данные из файла конфига
-    :return: обновленный инстанс
+    :param path: Текущий путь внутри конфига
+    :return: Обновленный инстанс model_instance
     """
-    for key, value in object_attributes(class_):
-        setattr(instance, key, parse_config(value(), value, data[key]) if isinstance(value, type) else data[key])
+    if path is None:
+        path = (class_.__name__,)
 
-    return instance
+    inspected_keys = set()
+    attributes = object_attributes(class_)
+    for attr_name, value_or_section in attributes:
+        try:
+            if isinstance(value_or_section, type):
+                value = parse_config(value_or_section(), value_or_section, data[attr_name], path=path + (attr_name,))
+            else:
+                value = data[attr_name]
+
+            inspected_keys.add(attr_name)
+        except KeyError:
+            raise ConfigException(f"Can not find key '{attr_name}' at path '{'.'.join(path)}'")  # todo collect errors
+
+        setattr(model_instance, attr_name, value)
+
+    extra_keys = set(data.keys()) - inspected_keys
+    if extra_keys:
+        raise ConfigException(f"Extra config data found, keys: {extra_keys} (path: {'.'.join(path)})")  # todo collect errors
+
+    return model_instance
 
 
 class Section:
     """
-    Позволяет вывести секцию с помощью print.
+    Секция внутри AbstractConfig или же Section, позволяет задать иерархию внутри модели конфигурации
     """
     def to_dict(self) -> dict:
-        """
-        Дамп конфига в dict.
-        :return: dict
-        """
         def make_dict(obj) -> dict:
             result = {}
             for key, value in object_attributes(obj):
@@ -85,4 +103,7 @@ class AbstractConfig(Section):
         :return: None
         """
         data = yaml.load(open(path))
+        parse_config(self, self.__class__, data)
+
+    def load_from_dict(self, data: dict) -> None:
         parse_config(self, self.__class__, data)
