@@ -113,6 +113,9 @@ class Section:
         if parent:
             setattr(parent, path[-1], value)
 
+    def __getitem__(self, item):
+        return getattr(self, item)
+
     def __str__(self):
         return pformat(self.to_dict(), indent=4)
 
