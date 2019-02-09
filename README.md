@@ -1,14 +1,14 @@
 ## Cool Config
 Simple way to use configuration files with Python configuration model.
 
+## Requires
+
+Python 3.6+
+
 ### Usage
-
-    pip install cool_config
-
 Simple usage example:
 
 ```python
-from unittest.mock import patch
 
 from cool_config import *
 
