@@ -6,7 +6,7 @@ with open('README.md') as f:
 
 
 setup(name='cool_config',
-      version='0.2.1',
+      version='0.2.2',
       long_description=long_description,
       long_description_content_type='text/markdown',
       description='Another Python configuration tool',
@@ -21,7 +21,7 @@ setup(name='cool_config',
       license='MIT',
       packages=find_packages(),
       install_requires=[
-          'PyYAML == 3.13'
+          'pyyaml>=4.2b1'
       ],
       include_package_data=True,
       zip_safe=False)
