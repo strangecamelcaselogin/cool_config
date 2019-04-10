@@ -135,7 +135,7 @@ class AbstractConfig(Section):
         :param path: path to file
         """
         with open(path) as f:
-            return self.__load(yaml.load(f))
+            return self.__load(yaml.load(f, Loader=yaml.FullLoader))
 
     def update_from_dict(self, data: dict, allow_missing_keys=True) -> 'AbstractConfig':
         """
@@ -152,7 +152,7 @@ class AbstractConfig(Section):
         :param allow_missing_keys: allowing to update config partially
         """
         with open(path) as f:
-            return self.__load(yaml.load(f), allow_to_fail=allow_missing_keys)
+            return self.__load(yaml.load(f, Loader=yaml.FullLoader), allow_to_fail=allow_missing_keys)
 
     def update_from_env(self, env_prefix: str, delimiter: str='__') -> 'AbstractConfig':
         """
