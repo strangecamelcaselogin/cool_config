@@ -22,7 +22,7 @@ class TestLoading(TestCase):
     def test_file_load(self):
         test_fake_file = 'test.yml'
         yml = yaml.dump(base_data)
-        with mock.patch('cool_config.cool_config.open' , new=mock.mock_open(read_data=yml)) as m:
+        with mock.patch('cool_config.cool_config.open', new=mock.mock_open(read_data=yml)) as m:
             config = Config()
 
             config.load(test_fake_file)
