@@ -6,7 +6,7 @@ with open('README.md') as f:
 
 
 setup(name='cool_config',
-      version='0.2.2.post1',
+      version='0.2.3',
       long_description=long_description,
       long_description_content_type='text/markdown',
       description='Another Python configuration tool',
