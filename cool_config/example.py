@@ -49,4 +49,4 @@ if __name__ == '__main__':
     # just way to patch ENVIRONMENT
     with patch.dict('os.environ', env):
         config.update_from_env('TEST')
-        print(config)  # {'b': '22', 'main': {'a': '6'}}
+        print(config)  # {'b': 22, 'main': {'a': 6}}

@@ -1,6 +1,6 @@
 from unittest import TestCase, mock
 import yaml
-from cool_config import AbstractConfig, Section, Integer
+from cool_config import AbstractConfig, Section, Integer, Boolean, String
 
 
 class Config(AbstractConfig):
@@ -8,13 +8,19 @@ class Config(AbstractConfig):
         a = Integer
 
     b = Integer
+    c = Boolean
+    d = Boolean
+    e = String
 
 
 base_data = {
     'main': {
         'a': 5
     },
-    'b': 42
+    'b': 42,
+    'c': True,
+    'd': False,
+    'e': 'test'
 }
 
 
@@ -78,14 +84,20 @@ class TestLoading(TestCase):
         env = {
             'TEST__main__a': '6',
             'TEST__b': '22',
+            'TEST__c': 'False',
+            'TEST__d': 'True',
+            'TEST__e': 'true',
             'THE_ANSWER_KEY': '42'
         }
 
         env_updated = {**base_data, **{
             'main': {
-                'a': '6'
+                'a': 6
             },
-            'b': '22'
+            'b': 22,
+            'c': False,
+            'd': True,
+            'e': 'true'
         }}
 
         with mock.patch.dict('os.environ', env):

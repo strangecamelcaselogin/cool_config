@@ -5,12 +5,14 @@ from typing import Tuple
 
 import yaml
 
+from cool_config.utils import deserialize_if_possible
 
 String = ''
 Integer = 0
 Float = .0
 Dict = {}
 List = []
+Boolean = False
 
 
 class ConfigException(Exception):
@@ -177,7 +179,8 @@ class AbstractConfig(Section):
                 raise ConfigException(f'Incorrect environment variable ({key}) format with prefix {env_prefix}')
 
             try:
-                self._set(path, environ[key])
+                value = deserialize_if_possible(environ[key])
+                self._set(path, value)
             except AttributeError:
                 raise ConfigException(f'Can not update self with environment variable "{key}"')
 

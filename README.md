@@ -59,6 +59,6 @@ if __name__ == '__main__':
         THE_ANSWER_KEY = '42'
     """
     config.update_from_env('TEST', delimiter='__')
-    print(config)  # {'b': '22', 'main': {'a': '6'}}
+    print(config)  # {'b': 22, 'main': {'a': 6}}
 
 ```

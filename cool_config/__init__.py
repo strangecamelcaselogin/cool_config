@@ -1,1 +1,1 @@
-from cool_config.cool_config import AbstractConfig, Section, String, Integer, Float, Dict, List
+from cool_config.cool_config import AbstractConfig, Section, String, Integer, Float, Dict, List, Boolean
